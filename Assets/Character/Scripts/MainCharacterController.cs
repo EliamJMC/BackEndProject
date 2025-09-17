@@ -5,6 +5,7 @@
     private es para declarar una variable que solo puede ser accedida dentro de la misma clase.
     public es para declarar una variable que puede ser accedida desde cualquier otra clase.
 */
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 public class MainCharacterController : MonoBehaviour
@@ -14,8 +15,8 @@ public class MainCharacterController : MonoBehaviour
 
     // Variables
     [Header("Variables")]
-    public float speed = 5f;
-    public float jumpForce = 2f;
+    public float courrentSpeed, walkingSpeed = 5.0f, runningSpeed;
+    public float jumpForce = 0.5f;
     public float rotationSpeed = 10f;
 
     // State
@@ -24,6 +25,7 @@ public class MainCharacterController : MonoBehaviour
     private Vector3 velocity;
     [SerializeField]
     private bool isGrounded;
+    private bool isRunning;
 
     // Components
     [Header("Componentes")]
@@ -33,24 +35,43 @@ public class MainCharacterController : MonoBehaviour
     private Animator animator;
     private Transform camTransform;
 
+    // Otros scripts
+    private Timer timer = new Timer();
+    private CharacterStats characterStats = new CharacterStats();
+
+    // Stats
+    [Header("Stats")]
+    private int health = CharacterStats.curentHealth ;
+    private float stamina = CharacterStats.currentStamina;
+
     // *NOTA* En este void, se guardan todas las instrucciones que se ejecutan SOLO al iniciarse el programa.
     void Start()
     {
+        // Asigna la velocidad de caminata a la velocidad actual al inicio
+        courrentSpeed = walkingSpeed;
+        runningSpeed = walkingSpeed * 1.5f;
+
+        // Inicializa componentes
         controller = GetComponent<CharacterController>();
         animator = GetComponentInChildren<Animator>();
         camTransform = GetComponentInChildren<Camera>().transform;
+
+        // Bloquea el cursor en el centro de la pantalla
         Cursor.lockState = CursorLockMode.Locked;
     }
 
     // *NOTA* En este void, se guardan todas las instrucciones que se ejecutan CADA FRAME.
     void Update()
     {
+        //Carga el metodo Update del Timer
+        timer.Update(Time.deltaTime);
+
         isGrounded = controller.isGrounded;
 
         if (isGrounded && velocity.y < 0)
         {
             // Un pequeño ajuste para mantener al personaje pegado al suelo.
-            velocity.y = -2f; 
+            velocity.y = -2f;
         }
 
         // Movimiento en el plano XZ
@@ -79,13 +100,33 @@ public class MainCharacterController : MonoBehaviour
 
             // Mover el personaje
             Vector3 moveDir = Quaternion.Euler(0, targetAngle, 0) * Vector3.forward;
-            controller.Move(moveDir.normalized * speed * Time.deltaTime);
+            controller.Move(moveDir.normalized * courrentSpeed * Time.deltaTime);
+        }
+
+        // Correr
+        if (Input.GetKey(KeyCode.LeftShift) && moveMagnitude > 0)
+        {
+            characterStats._FatigueStamina(1);
+            isRunning = true;
+            courrentSpeed = runningSpeed;
+            animator.SetBool("isRunning", true);
+        }
+        else
+        {
+            isRunning = false;
+            courrentSpeed = walkingSpeed;
+            animator.SetBool("isRunning", false);
         }
 
         // Salto
         if (Input.GetButtonDown("Jump") && isGrounded)
         {
-            velocity.y = Mathf.Sqrt(jumpForce * -2f * Gravity);
+            float jumpDelay = 0.6f;
+            if (!isRunning && move.magnitude <= 0.1f)
+            {
+                timer.StartTimer(jumpDelay);
+                timer.OnTimerComplete += _Jump;
+            }
             animator.SetTrigger("Jump");
         }
 
@@ -93,4 +134,6 @@ public class MainCharacterController : MonoBehaviour
         velocity.y += Gravity * Time.deltaTime;
         controller.Move(velocity * Time.deltaTime);
     }
+
+    void _Jump() { velocity.y = Mathf.Sqrt(jumpForce * -2f * Gravity); }
 }
