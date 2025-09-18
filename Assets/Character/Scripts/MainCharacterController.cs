@@ -39,10 +39,10 @@ public class MainCharacterController : MonoBehaviour
     private Timer timer = new Timer();
     private CharacterStats characterStats = new CharacterStats();
 
-    // Stats
+    /*Stats
     [Header("Stats")]
     private int health = CharacterStats.curentHealth ;
-    private float stamina = CharacterStats.currentStamina;
+    private float stamina = CharacterStats.currentStamina;*/
 
     // *NOTA* En este void, se guardan todas las instrucciones que se ejecutan SOLO al iniciarse el programa.
     void Start()
@@ -104,12 +104,17 @@ public class MainCharacterController : MonoBehaviour
         }
 
         // Correr
-        if (Input.GetKey(KeyCode.LeftShift) && moveMagnitude > 0)
+        if (Input.GetKey(KeyCode.LeftShift) && moveMagnitude > 0 && isGrounded)
         {
             characterStats._FatigueStamina(1);
             isRunning = true;
             courrentSpeed = runningSpeed;
             animator.SetBool("isRunning", true);
+
+            if (Input.GetButtonDown("Jump"))
+            {
+                animator.SetTrigger("Jump");
+            }
         }
         else
         {
@@ -126,8 +131,8 @@ public class MainCharacterController : MonoBehaviour
             {
                 timer.StartTimer(jumpDelay);
                 timer.OnTimerComplete += _Jump;
+                animator.SetTrigger("Jump");
             }
-            animator.SetTrigger("Jump");
         }
 
         // Aplicar gravedad
