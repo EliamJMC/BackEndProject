@@ -1,0 +1,9 @@
+{
+  "nombre": "Dragon",
+  "nivel": "100",
+  "vida": "30000",
+  "fuerza": "400",
+  "defensa": "500",
+  "velocidad": "75",
+  "loot": "[escamas_de_dragon, llave_del_palacio]"
+}

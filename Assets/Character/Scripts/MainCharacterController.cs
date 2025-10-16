@@ -39,10 +39,10 @@ public class MainCharacterController : MonoBehaviour
     private Timer timer = new Timer();
     private CharacterStats characterStats = new CharacterStats();
 
-    /*Stats
+    //Stats
     [Header("Stats")]
-    private int health = CharacterStats.curentHealth ;
-    private float stamina = CharacterStats.currentStamina;*/
+    private int health;
+    private float stamina;
 
     // *NOTA* En este void, se guardan todas las instrucciones que se ejecutan SOLO al iniciarse el programa.
     void Start()
@@ -65,6 +65,9 @@ public class MainCharacterController : MonoBehaviour
     {
         //Carga el metodo Update del Timer
         timer.Update(Time.deltaTime);
+
+        health = characterStats.currentHealth;
+        stamina = characterStats.currentStamina;
 
         isGrounded = controller.isGrounded;
 
@@ -140,5 +143,5 @@ public class MainCharacterController : MonoBehaviour
         controller.Move(velocity * Time.deltaTime);
     }
 
-    void _Jump() { velocity.y = Mathf.Sqrt(jumpForce * -2f * Gravity); }
+    void _Jump() { velocity.y = Mathf.Sqrt(jumpForce * -1f * Gravity); }
 }
