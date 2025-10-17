@@ -6,10 +6,7 @@ using Newtonsoft.Json.Linq;         // Biblioteca JSON (JObject, JArray...) para
 
 public class JsonManagerWindow : EditorWindow
 {
-    // Enum que describe los modos en los que puede estar la ventana (crear modelo, crear json, ver json).
     private enum JsonMode { CrearModelo, CrearJsonDesdeModelo, VerJson }
-
-    // Variable que almacena el modo actual (por defecto al crear la ventana será CrearModelo).
     private JsonMode currentMode = JsonMode.CrearModelo;
 
 

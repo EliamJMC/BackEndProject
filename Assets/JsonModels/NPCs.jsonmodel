@@ -1,0 +1,26 @@
+{
+  "NPCs": [
+    {
+      "Name": null,
+      "Level": 0.0,
+      "Description": null,
+      "Interactable": false,
+      "Interactions": [
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "Name": null,
+      "Level": 0.0,
+      "Description": null,
+      "Interactable": false,
+      "interactions": [
+        "Hablar",
+        "Vender",
+        "Comprar"
+      ]
+    }
+  ]
+}
