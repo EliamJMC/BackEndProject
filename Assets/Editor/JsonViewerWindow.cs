@@ -4,7 +4,6 @@ using System.IO;                    // Para manejar archivos y rutas del sistema
 using System.Collections.Generic;   // Para usar listas y diccionarios genéricos.
 using Newtonsoft.Json.Linq;         // Biblioteca JSON (JObject, JArray...) para parsear y manipular JSON dinámicamente.
 
-// Definimos una ventana del editor llamada JsonManagerWindow que hereda de EditorWindow.
 public class JsonManagerWindow : EditorWindow
 {
     // Enum que describe los modos en los que puede estar la ventana (crear modelo, crear json, ver json).
@@ -13,18 +12,21 @@ public class JsonManagerWindow : EditorWindow
     // Variable que almacena el modo actual (por defecto al crear la ventana será CrearModelo).
     private JsonMode currentMode = JsonMode.CrearModelo;
 
+
     // ----------------------------------------------------
     // Variables comunes / estado de la ventana
     // ----------------------------------------------------
     private Vector2 scrollPos; // Posición de scroll para las áreas con contenido desplazable.
     private string basePath => Path.Combine(Application.dataPath, "JsonModels");    // Carpeta base donde se guardan los modelos (.jsonmodel)
 
+
     // ----------------------------------------------------
     // --- Campos para "Crear modelo" ---
     // ----------------------------------------------------
     private string modelName = ""; // Nombre del modelo que vamos a crear o editar.
-    private List<KeyValuePair<string, string>> modelFields = new List<KeyValuePair<string, string>>();
+    private List<JsonField> modelFields = new List<JsonField>();
     // Lista de pares clave:valor que representa los campos del modelo y su valor por defecto.
+
 
     // ----------------------------------------------------
     // --- Campos para "Crear JSON desde modelo" ---
@@ -36,6 +38,7 @@ public class JsonManagerWindow : EditorWindow
     private Dictionary<string, string> jsonValues = new Dictionary<string, string>();
     // Diccionario con los valores que el usuario ingresa para crear el JSON desde la plantilla.
 
+
     // ----------------------------------------------------
     // --- Campos para "Ver / Editar JSON" ---
     // ----------------------------------------------------
@@ -44,7 +47,8 @@ public class JsonManagerWindow : EditorWindow
     private JObject jsonObject;                                                     // Objeto parseado (JObject) del JSON cargado.
     private bool isEditing = false;                                                 // Flag que indica si estamos en modo edición (texto editable) o solo visualización.
 
-    // Agrega la opción en el menú "Tools" para abrir esta ventana del editor.
+
+
     [MenuItem("Tools/JSON Manager")]
     public static void ShowWindow()
     {
@@ -52,7 +56,6 @@ public class JsonManagerWindow : EditorWindow
         GetWindow<JsonManagerWindow>("JSON Manager");
     }
 
-    // Este método se llama cuando la ventana se habilita / abre.
     private void OnEnable()
     {
         // Si la carpeta base (Assets/JsonModels) no existe, la crea.
@@ -63,24 +66,16 @@ public class JsonManagerWindow : EditorWindow
         LoadAvailableModels();
     }
 
-    // Método principal de GUI que Unity llama varias veces por segundo para dibujar la ventana.
     private void OnGUI()
     {
         // Título grande de la ventana.
         GUILayout.Label("🧩 JSON Manager", EditorStyles.boldLabel);
         GUILayout.Space(5); // Espacio pequeño.
 
-        // Barra horizontal con toggles para cambiar entre modos.
+        // Selector de modo (popup) en la parte superior.
         GUILayout.BeginHorizontal();
-        // Si el toggle "Crear Modelo" está activo, se establece el modo correspondiente.
-        if (GUILayout.Toggle(currentMode == JsonMode.CrearModelo, "Crear Modelo", EditorStyles.toolbarButton))
-            currentMode = JsonMode.CrearModelo;
-        // Toggle para "Crear JSON desde Modelo".
-        if (GUILayout.Toggle(currentMode == JsonMode.CrearJsonDesdeModelo, "Crear JSON desde Modelo", EditorStyles.toolbarButton))
-            currentMode = JsonMode.CrearJsonDesdeModelo;
-        // Toggle para "Ver / Editar JSON".
-        if (GUILayout.Toggle(currentMode == JsonMode.VerJson, "Leer / Editar JSON", EditorStyles.toolbarButton))
-            currentMode = JsonMode.VerJson;
+        GUILayout.Label("📂 Selecciona modo:", GUILayout.Width(120));
+        currentMode = (JsonMode)EditorGUILayout.Popup((int)currentMode, new string[] { "Crear Modelo", "Crear JSON desde Modelo", "Editar JSON" } );
         GUILayout.EndHorizontal();
 
         GUILayout.Space(10); // Separador visual.
@@ -100,121 +95,280 @@ public class JsonManagerWindow : EditorWindow
         }
     }
 
+
+
     // ================================================================
     // 🧩 MODO 1: Crear Modelo - Dibuja la interfaz para crear modelos
     // ================================================================
     private void DrawCreateModel()
     {
-        GUILayout.Label("Crear o editar modelo JSON", EditorStyles.boldLabel);
+        if (availableModels != null && availableModels.Length > 0)
+        {
+            GUILayout.BeginHorizontal();
+            int nuevoIndex = EditorGUILayout.Popup("Seleccionar modelo:", selectedModelIndex, availableModels);
+            if (nuevoIndex != selectedModelIndex)
+            {
+                selectedModelIndex = nuevoIndex;
+                LoadModelForEditing(availableModels[selectedModelIndex]);
+            }
 
-        // Sección para editar/crear un nuevo modelo
+            if (GUILayout.Button("🗑️", GUILayout.Width(20)))
+            {
+                string modelToDelete = availableModels[selectedModelIndex];
+                if (EditorUtility.DisplayDialog("Eliminar modelo", $"¿Seguro que deseas eliminar '{modelToDelete}'?", "Sí", "No"))
+                {
+                    string modelPath = Path.Combine(basePath, modelToDelete + ".jsonmodel");
+                    File.Delete(modelPath);
+                    AssetDatabase.Refresh();
+                    LoadAvailableModels();
+                    if (availableModels.Length > 0)
+                        selectedModelIndex = Mathf.Clamp(selectedModelIndex, 0, availableModels.Length - 1);
+                    else
+                        selectedModelIndex = 0;
+                }
+            }
+            GUILayout.EndHorizontal();
+        }
+
         GUILayout.Space(5);
+
         modelName = EditorGUILayout.TextField("Nombre del modelo:", modelName);     // Campo para el nombre del modelo
 
         GUILayout.Space(5);
+
+        GUILayout.BeginHorizontal();
         GUILayout.Label("Campos del modelo (nombre + valor por defecto):", EditorStyles.miniBoldLabel);
 
+        if (GUILayout.Button("➕ Agregar Campo"))
+        {
+            GenericMenu menu = new GenericMenu();
+            menu.AddItem(new GUIContent("String"), false, () => AddField(JsonFieldType.String));
+            menu.AddItem(new GUIContent("Number"), false, () => AddField(JsonFieldType.Number));
+            menu.AddItem(new GUIContent("Boolean"), false, () => AddField(JsonFieldType.Boolean));
+            menu.AddItem(new GUIContent("Null"), false, () => AddField(JsonFieldType.Null));
+            menu.AddItem(new GUIContent("Object"), false, () => AddField(JsonFieldType.Object));
+            menu.AddItem(new GUIContent("Array"), false, () => AddField(JsonFieldType.Array));
+            menu.ShowAsContext();
+        }
+
+        GUILayout.EndHorizontal();
+
         // Área scroll para los campos del modelo (limitada en altura).
-        scrollPos = EditorGUILayout.BeginScrollView(scrollPos, GUILayout.Height(200));
-        for (int i = 0; i < modelFields.Count; i++)
-        {
-            // Cada línea muestra dos textfields (clave y valor) y un botón para eliminar el campo.
-            EditorGUILayout.BeginHorizontal();
-            modelFields[i] = new KeyValuePair<string, string>(
-                EditorGUILayout.TextField(modelFields[i].Key),                      // nombre del campo
-                EditorGUILayout.TextField(modelFields[i].Value)                     // valor por defecto
-            );
-            if (GUILayout.Button("X", GUILayout.Width(20)))
-                modelFields.RemoveAt(i);                                            // Si se presiona X, se elimina el campo actual.
-            EditorGUILayout.EndHorizontal();
-        }
+        scrollPos = EditorGUILayout.BeginScrollView(scrollPos, GUILayout.Height(250));
+        foreach (var field in modelFields)
+            DrawJsonField(field, modelFields, 0);
         EditorGUILayout.EndScrollView();
-
-        // Si existen modelos guardados, los muestra en una lista con opciones para Editar o Eliminar.
-        if (availableModels != null && availableModels.Length > 0)
-        {
-            GUILayout.Label("Modelos existentes:", EditorStyles.miniBoldLabel);
-            for (int i = 0; i < availableModels.Length; i++)
-            {
-                EditorGUILayout.BeginHorizontal();
-                GUILayout.Label(availableModels[i]);                                // Muestra el nombre del modelo.
-                if (GUILayout.Button("Editar", GUILayout.Width(80)))
-                {
-                    LoadModelForEditing(availableModels[i]);                        // Cargar el modelo para editarlo.
-                }
-                if (GUILayout.Button("🗑️", GUILayout.Width(30)))
-                {
-                    // Confirmación antes de borrar el archivo del modelo.
-                    if (EditorUtility.DisplayDialog("Eliminar modelo", $"¿Seguro que deseas eliminar '{availableModels[i]}'?", "Sí", "No"))
-                    {
-                        string modelPath = Path.Combine(basePath, availableModels[i] + ".jsonmodel");
-                        File.Delete(modelPath);                                     // Borra el archivo físico.
-                        AssetDatabase.Refresh();                                    // Refresca la base de assets para que Unity lo detecte.
-                        LoadAvailableModels();                                      // Recarga la lista de modelos disponibles.
-                    }
-                }
-                EditorGUILayout.EndHorizontal();
-            }
-            GUILayout.Space(10);
-        }
-
-        // Botón para añadir un nuevo campo vacío.
-        if (GUILayout.Button("Agregar Campo"))
-            modelFields.Add(new KeyValuePair<string, string>("", ""));
-
-        GUILayout.Space(10);
 
         // Botón para guardar el modelo actual en disco (.jsonmodel)
         if (GUILayout.Button("💾 Guardar Modelo"))
             SaveModel();
     }
 
-    // Carga un modelo desde disco para editarlo en la ventana.
+    private void DrawJsonField(JsonField field, List<JsonField> parentList, int indent)
+    {
+        EditorGUILayout.BeginHorizontal();
+        GUILayout.Space(indent * 20);
+
+        field.key = EditorGUILayout.TextField(field.key, GUILayout.Width(150));
+
+        switch (field.type)
+        {
+            case JsonFieldType.String:
+                field.stringValue = EditorGUILayout.TextField(field.stringValue);
+                break;
+            case JsonFieldType.Number:
+                field.numberValue = EditorGUILayout.DoubleField(field.numberValue);
+                break;
+            case JsonFieldType.Boolean:
+                field.boolValue = EditorGUILayout.Toggle(field.boolValue);
+                break;
+            case JsonFieldType.Null:
+                GUILayout.Label("null", EditorStyles.label);
+                break;
+            case JsonFieldType.Object:
+            case JsonFieldType.Array:
+                GUILayout.Label($"({field.type})", EditorStyles.boldLabel);
+                if (GUILayout.Button("+", GUILayout.Width(25)))
+                {
+                    GenericMenu subMenu = new GenericMenu();
+                    subMenu.AddItem(new GUIContent("String"), false, () => field.children.Add(new JsonField("NuevoCampo", JsonFieldType.String)));
+                    subMenu.AddItem(new GUIContent("Number"), false, () => field.children.Add(new JsonField("NuevoCampo", JsonFieldType.Number)));
+                    subMenu.AddItem(new GUIContent("Boolean"), false, () => field.children.Add(new JsonField("NuevoCampo", JsonFieldType.Boolean)));
+                    subMenu.AddItem(new GUIContent("Null"), false, () => field.children.Add(new JsonField("NuevoCampo", JsonFieldType.Null)));
+                    subMenu.AddItem(new GUIContent("Object"), false, () => field.children.Add(new JsonField("NuevoCampo", JsonFieldType.Object)));
+                    subMenu.AddItem(new GUIContent("Array"), false, () => field.children.Add(new JsonField("NuevoCampo", JsonFieldType.Array)));
+                    subMenu.ShowAsContext();
+                }
+                break;
+        }
+
+        if (GUILayout.Button("❌", GUILayout.Width(25)))
+        {
+            parentList.Remove(field);
+            EditorGUILayout.EndHorizontal();
+            return; // salir de la función para evitar errores al iterar
+        }
+
+        EditorGUILayout.EndHorizontal();
+
+        // Dibujar hijos (para objetos o arrays)
+        if (field.children != null && field.children.Count > 0)
+        {
+            foreach (var child in field.children)
+                DrawJsonField(child, field.children, indent + 1);
+        }
+    }
+
+    private void AddField(JsonFieldType type)
+    {
+        modelFields.Add(new JsonField("NuevoCampo", type));
+    }
+
     private void LoadModelForEditing(string modelToLoad)
     {
         try
         {
-            string path = Path.Combine(basePath, modelToLoad + ".jsonmodel");       // Ruta del archivo
-            string content = File.ReadAllText(path);                                // Lee todo el contenido
-            JObject obj = JObject.Parse(content);                                   // Parsea el JSON a JObject
+            // Ruta del archivo .jsonmodel
+            string path = Path.Combine(basePath, modelToLoad + ".jsonmodel");
 
-            modelName = modelToLoad;                                                // Asigna el nombre del modelo al campo
-            modelFields.Clear();                                                    // Limpia la lista actual de campos
+            if (!File.Exists(path))
+            {
+                Debug.LogError($"El archivo '{path}' no existe.");
+                return;
+            }
 
-            // Recorre las propiedades del JObject y las añade como pares clave-valor
-            foreach (var prop in obj)
-                modelFields.Add(new KeyValuePair<string, string>(prop.Key, prop.Value.ToString()));
+            // Leer contenido del archivo
+            string content = File.ReadAllText(path);
+            JObject jObject = JObject.Parse(content);
+
+            // Resetear el modelo actual
+            modelName = modelToLoad;
+            modelFields.Clear();
+
+            // Convertir cada propiedad JSON en un JsonField
+            foreach (var prop in jObject.Properties())
+            {
+                JsonField field = ParseJTokenToJsonField(prop.Name, prop.Value);
+                modelFields.Add(field);
+            }
+
+            Debug.Log($"Modelo '{modelToLoad}' cargado correctamente.");
         }
         catch (System.Exception e)
         {
-            Debug.LogError($"Error al cargar modelo: {e.Message}");                 // Log en consola en caso de error.
+            Debug.LogError($"Error al cargar modelo '{modelToLoad}': {e.Message}");
         }
     }
 
-    // Guarda el modelo actual en un archivo .jsonmodel dentro de la carpeta base.
+    private JsonField ParseJTokenToJsonField(string key, JToken token)
+    {
+        // Si es un objeto JSON { ... }
+        if (token is JObject jObj)
+        {
+            var field = new JsonField(key, JsonFieldType.Object);
+            foreach (var child in jObj.Properties())
+            {
+                JsonField childField = ParseJTokenToJsonField(child.Name, child.Value);
+                field.children.Add(childField);
+            }
+            return field;
+        }
+
+        // Si es un array JSON [ ... ]
+        else if (token is JArray jArr)
+        {
+            var field = new JsonField(key, JsonFieldType.Array);
+            int index = 0;
+            foreach (var item in jArr)
+            {
+                JsonField itemField = ParseJTokenToJsonField($"Item_{index++}", item);
+                field.children.Add(itemField);
+            }
+            return field;
+        }
+
+        // Si es un valor simple (string, number, bool, null)
+        else
+        {
+            switch (token.Type)
+            {
+                case JTokenType.String:
+                    return new JsonField(key, JsonFieldType.String)
+                    {
+                        stringValue = token.ToString()
+                    };
+
+                case JTokenType.Integer:
+                case JTokenType.Float:
+                    return new JsonField(key, JsonFieldType.Number)
+                    {
+                        numberValue = (double)token
+                    };
+
+                case JTokenType.Boolean:
+                    return new JsonField(key, JsonFieldType.Boolean)
+                    {
+                        boolValue = (bool)token
+                    };
+
+                case JTokenType.Null:
+                    return new JsonField(key, JsonFieldType.Null);
+
+                default:
+                    Debug.LogWarning($"Tipo JSON no reconocido: {token.Type} en clave '{key}'");
+                    return new JsonField(key, JsonFieldType.String)
+                    {
+                        stringValue = token.ToString()
+                    };
+            }
+        }
+    }
+
     private void SaveModel()
     {
-        // Validación: necesita nombre del modelo.
         if (string.IsNullOrEmpty(modelName))
         {
             EditorUtility.DisplayDialog("Error", "Debes ingresar un nombre para el modelo.", "OK");
             return;
         }
 
-        // Construye un JObject con los campos especificados.
         JObject obj = new JObject();
         foreach (var field in modelFields)
-            obj[field.Key] = field.Value;
+            obj[field.key] = ConvertJsonFieldToJToken(field);
 
-        // Ruta final para guardar el archivo del modelo.
         string path = Path.Combine(basePath, modelName + ".jsonmodel");
-        File.WriteAllText(path, obj.ToString());                                    // Escribe el JSON en disco.
-        AssetDatabase.Refresh();                                                    // Refresca assets para que Unity detecte el nuevo archivo.
+        File.WriteAllText(path, obj.ToString());
+        AssetDatabase.Refresh();
 
-        LoadAvailableModels();                                                      // Recarga la lista de modelos disponibles.
+        LoadAvailableModels();
+        selectedModelIndex = System.Array.IndexOf(availableModels, modelName);
 
-        EditorUtility.DisplayDialog("Éxito", $"Modelo '{modelName}' guardado correctamente.", "OK"); // Mensaje de éxito.
+        EditorUtility.DisplayDialog("Éxito", $"Modelo '{modelName}' guardado correctamente.", "OK");
     }
+
+    private JToken ConvertJsonFieldToJToken(JsonField field)
+    {
+        switch (field.type)
+        {
+            case JsonFieldType.String: return field.stringValue;
+            case JsonFieldType.Number: return field.numberValue;
+            case JsonFieldType.Boolean: return field.boolValue;
+            case JsonFieldType.Null: return JValue.CreateNull();
+            case JsonFieldType.Object:
+                var obj = new JObject();
+                foreach (var child in field.children)
+                    obj[child.key] = ConvertJsonFieldToJToken(child);
+                return obj;
+            case JsonFieldType.Array:
+                var arr = new JArray();
+                foreach (var child in field.children)
+                    arr.Add(ConvertJsonFieldToJToken(child));
+                return arr;
+            default: return null;
+        }
+    }
+
+
 
     // ============================================================
     // 🏗️ MODO 2: Crear JSON desde Modelo - Interfaz para crear JSON
@@ -382,6 +536,9 @@ public class JsonManagerWindow : EditorWindow
         }
     }
 
+
+
+
     // ============================================================
     // 👀 MODO 3: Ver / Editar JSON - Dibuja la interfaz de viewer/editor
     // ============================================================
@@ -541,3 +698,33 @@ public class JsonManagerWindow : EditorWindow
         }
     }
 }
+
+
+
+[System.Serializable]
+public class JsonField
+{
+    public string key;
+    public JsonFieldType type;
+    public string stringValue;
+    public double numberValue;
+    public bool boolValue;
+    public List<JsonField> children = new List<JsonField>(); // para objetos o arrays
+
+    public JsonField(string key, JsonFieldType type)
+    {
+        this.key = key;
+        this.type = type;
+    }
+}
+
+public enum JsonFieldType
+{
+    String,
+    Number,
+    Boolean,
+    Null,
+    Object,
+    Array
+}
+
