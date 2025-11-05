@@ -9,36 +9,18 @@ public class JsonManagerWindow : EditorWindow
     private enum JsonMode { CrearModelo, CrearJsonDesdeModelo, VerJson }
     private JsonMode currentMode = JsonMode.CrearModelo;
 
-
-    // ----------------------------------------------------
-    // Variables comunes / estado de la ventana
-    // ----------------------------------------------------
-    private Vector2 scrollPos; // Posición de scroll para las áreas con contenido desplazable.
+    private Vector2 scrollPos;                                                      // Posición de scroll para las áreas con contenido desplazable.
     private string basePath => Path.Combine(Application.dataPath, "JsonModels");    // Carpeta base donde se guardan los modelos (.jsonmodel)
 
-
-    // ----------------------------------------------------
-    // --- Campos para "Crear modelo" ---
-    // ----------------------------------------------------
-    private string modelName = ""; // Nombre del modelo que vamos a crear o editar.
+    private string modelName = "";                                                  // Nombre del modelo que vamos a crear o editar.
     private List<JsonField> modelFields = new List<JsonField>();
-    // Lista de pares clave:valor que representa los campos del modelo y su valor por defecto.
 
-
-    // ----------------------------------------------------
-    // --- Campos para "Crear JSON desde modelo" ---
-    // ----------------------------------------------------
     private string currentJsonModelName = null;                                     // Nombre del modelo del JSON que estamos editando (si corresponde).
     private string[] availableModels;                                               // Lista de modelos disponibles en la carpeta base.
     private int selectedModelIndex = 0;                                             // Índice del modelo seleccionado en el popup.
     private JObject modelTemplate;                                                  // Template (JObject) cargado del archivo .jsonmodel
     private Dictionary<string, string> jsonValues = new Dictionary<string, string>();
-    // Diccionario con los valores que el usuario ingresa para crear el JSON desde la plantilla.
 
-
-    // ----------------------------------------------------
-    // --- Campos para "Ver / Editar JSON" ---
-    // ----------------------------------------------------
     private string jsonFilePath = "";                                               // Ruta completa del JSON que se está viendo/ editando.
     private string jsonText = "";                                                   // Texto crudo del JSON (para edición directa).
     private JObject jsonObject;                                                     // Objeto parseado (JObject) del JSON cargado.
@@ -49,8 +31,7 @@ public class JsonManagerWindow : EditorWindow
     [MenuItem("Tools/JSON Manager")]
     public static void ShowWindow()
     {
-        // Obtiene (o crea) la ventana y le pone título "JSON Manager".
-        GetWindow<JsonManagerWindow>("JSON Manager");
+        GetWindow<JsonManagerWindow>("JSON Manager");                               // Obtiene (o crea) la ventana y le pone título "JSON Manager".
     }
 
     private void OnEnable()

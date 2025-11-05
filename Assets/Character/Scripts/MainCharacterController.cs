@@ -10,138 +10,120 @@ using UnityEngine;
 
 public class MainCharacterController : MonoBehaviour
 {
-    // Constants
+    // Gravity con
     public const float Gravity = -9.81f;
 
-    // Variables
+    
     [Header("Variables")]
+    // Speed vars
     public float courrentSpeed, walkingSpeed = 5.0f, runningSpeed;
     public float jumpForce = 0.5f;
-    public float rotationSpeed = 10f;
+    public float rotation = 10f;
 
     // State
     [Header("Estados")]
     [SerializeField]
     private Vector3 velocity;
-    [SerializeField]
-    private bool isGrounded;
-    private bool isRunning;
+
+    // States
+    [Header("States")]
+    public bool isGrounded;
+    public bool isMoving;
+    public bool isRunning;
+    public bool isJumping;
 
     // Components
     [Header("Componentes")]
-    [SerializeField]
-    private CharacterController controller;
-    [SerializeField]
-    private Animator animator;
-    private Transform camTransform;
+    [SerializeField]    private CharacterController controller;
+    [SerializeField]    private Animator animator;
+    [SerializeField]    private Transform camTransform;
+    [SerializeField]    private CharacterStats characterStats;
+    [SerializeField]    private Timer timer = new Timer(); // Create a new "Timer" script
 
-    // Otros scripts
-    private Timer timer = new Timer();
-    private CharacterStats characterStats = new CharacterStats();
 
-    //Stats
-    [Header("Stats")]
-    private int health;
-    private float stamina;
-
-    // *NOTA* En este void, se guardan todas las instrucciones que se ejecutan SOLO al iniciarse el programa.
     void Start()
     {
-        // Asigna la velocidad de caminata a la velocidad actual al inicio
         courrentSpeed = walkingSpeed;
         runningSpeed = walkingSpeed * 1.5f;
 
-        // Inicializa componentes
+        characterStats = GetComponent<CharacterStats>();
         controller = GetComponent<CharacterController>();
         animator = GetComponentInChildren<Animator>();
         camTransform = GetComponentInChildren<Camera>().transform;
 
-        // Bloquea el cursor en el centro de la pantalla
         Cursor.lockState = CursorLockMode.Locked;
     }
 
-    // *NOTA* En este void, se guardan todas las instrucciones que se ejecutan CADA FRAME.
     void Update()
     {
-        //Carga el metodo Update del Timer
+        Vector3 move = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
+
+        GravityManagemnt();
+        UpdatingMethods(move);
+        Mouvement(move);
+
+    }
+    void UpdatingMethods(Vector3 move)
+    {
         timer.Update(Time.deltaTime);
 
-        health = characterStats.currentHealth;
-        stamina = characterStats.currentStamina;
-
         isGrounded = controller.isGrounded;
-
-        if (isGrounded && velocity.y < 0)
+        isMoving = move.magnitude >= 0.1f;
+        isRunning = Input.GetKey(KeyCode.LeftShift) && isGrounded && characterStats.currentStamina > 0;
+        isJumping = Input.GetButtonDown("Jump") && isGrounded;
+    }
+    
+    void Mouvement(Vector3 move)
+    {
+        // Basic moves
+        if (isMoving)
         {
-            // Un pequeño ajuste para mantener al personaje pegado al suelo.
-            velocity.y = -2f;
-        }
-
-        // Movimiento en el plano XZ
-        // Obtener entrada del usuario WASD o flechas
-        float moveX = Input.GetAxis("Horizontal");
-        float moveZ = Input.GetAxis("Vertical");
-
-        // Crear un vector de movimiento basado en la entrada
-        Vector3 move = new Vector3(moveX, 0, moveZ);
-        float moveMagnitude = move.magnitude;
-        animator.SetFloat("Speed", move.magnitude);
-
-        // Normalizar el vector de movimiento para evitar velocidad diagonal más rápida
-        Vector3 moveNormalized = move.normalized;
-
-
-        // Mover el personaje solo si hay entrada significativa
-        if (move.magnitude >= 0.1f)
-        {
-            // Calcular la dirección del movimiento en función de la cámara
-            float targetAngle = Mathf.Atan2(moveNormalized.x, moveNormalized.z) * Mathf.Rad2Deg + camTransform.eulerAngles.y;
-            float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref rotationSpeed, 0.1f);
-
-            // Rotar el personaje hacia la dirección del movimiento
-            transform.rotation = Quaternion.Euler(0, angle, 0);
-
-            // Mover el personaje
+            float targetAngle = Mathf.Atan2(move.normalized.x, move.normalized.z) * Mathf.Rad2Deg + camTransform.eulerAngles.y;
+            float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref rotation, 0.1f);
             Vector3 moveDir = Quaternion.Euler(0, targetAngle, 0) * Vector3.forward;
+
+            transform.rotation = Quaternion.Euler(0, angle, 0);
             controller.Move(moveDir.normalized * courrentSpeed * Time.deltaTime);
-        }
 
-        // Correr
-        if (Input.GetKey(KeyCode.LeftShift) && moveMagnitude > 0 && isGrounded)
-        {
-            characterStats._FatigueStamina(1);
-            isRunning = true;
-            courrentSpeed = runningSpeed;
-            animator.SetBool("isRunning", true);
+            animator.SetFloat("Speed", move.magnitude);
 
-            if (Input.GetButtonDown("Jump"))
+            // Running logic
+            if (isRunning)
             {
-                animator.SetTrigger("Jump");
-            }
-        }
-        else
-        {
-            isRunning = false;
-            courrentSpeed = walkingSpeed;
-            animator.SetBool("isRunning", false);
-        }
+                courrentSpeed = runningSpeed;
+                animator.SetBool("isRunning", true);
 
-        // Salto
-        if (Input.GetButtonDown("Jump") && isGrounded)
-        {
-            float jumpDelay = 0.6f;
-            if (!isRunning && move.magnitude <= 0.1f)
+                // Jumping while running
+                if (isJumping)
+                    animator.SetTrigger("Jump");
+            }
+            else
             {
-                timer.StartTimer(jumpDelay);
-                timer.OnTimerComplete += _Jump;
-                animator.SetTrigger("Jump");
+                courrentSpeed = walkingSpeed;
+                animator.SetBool("isRunning", false);
             }
+        } 
+        // Idle Jump
+        else if (isJumping)
+        {
+            timer.StartTimer(0.6f);
+            timer.OnTimerComplete += Impultion;
+            animator.SetTrigger("Jump");
         }
 
-        // Aplicar gravedad
+
+    }
+
+    void GravityManagemnt() 
+    {
+        //Dont touch I dont know how it works
+        if (isGrounded && velocity.y < 0)
+            velocity.y = -2f;
+
         velocity.y += Gravity * Time.deltaTime;
         controller.Move(velocity * Time.deltaTime);
     }
 
-    void _Jump() { velocity.y = Mathf.Sqrt(jumpForce * -1f * Gravity); }
+    // Can be upgraded and should
+    void Impultion() { velocity.y = Mathf.Sqrt(jumpForce * -1f * Gravity); }
 }

@@ -1,59 +1,77 @@
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Rendering;
 
-public class CharacterStats
+public class CharacterStats : MonoBehaviour
 {
-    public int maxHealth = 100;
-    public float maxStamina = 100;
+    [Header("Components")]
+    [SerializeField]    private MainCharacterController MCC;
+    [SerializeField]    Timer regenerationTimer = new Timer();
 
+    [Header("Stamina")]
+    public float maxStamina = 100;
+    
+    public float regenerationDelay = 5f;
+    public float staminaRegeneration = 5f;
+    public float lastStaminaUse;
+
+    public float runningStaminaUse = 7.5f;
+    public float jumpingStaminaUse;
+
+    [Header("Health")]
+    public int maxHealth = 100;
     public int currentHealth;
     public float currentStamina;
 
-    private Timer timer = new Timer();
+    private bool canRegenerate = false;
 
-    void Start()
+
+    public void Start()
     {
+        MCC = GetComponent<MainCharacterController>();
+
         currentHealth = maxHealth;
         currentStamina = maxStamina;
     }
 
-
-    // Health Methods
-    public void _AddHealth(int amount)
+    public void Update()
     {
-        currentHealth += amount;
-        if (currentHealth < 0) currentHealth = 0;
+        StaminaManagement();
     }
 
-    public void _RemoveHealth(int amount)
+    public void StaminaManagement()
     {
-        currentHealth -= amount;
-        if (currentHealth < 0) currentHealth = 0;
+        // If player is running, substract stamina
+        if (MCC.isRunning)
+        {
+            currentStamina -= runningStaminaUse * Time.deltaTime;
+            jumpingStaminaUse = runningStaminaUse * (4 / 3);
+
+            // If player jumps while running, substract stamina
+            if (MCC.isJumping)
+                currentStamina -= jumpingStaminaUse;
+            
+            // Set last time Stamina was used
+            lastStaminaUse = Time.time;
+        }
+        // If player jumps
+        else if (!MCC.isMoving && MCC.isJumping)
+        {
+            jumpingStaminaUse = runningStaminaUse * (2 / 3);
+
+            currentStamina -= jumpingStaminaUse;
+            lastStaminaUse = Time.time;
+        }
+        // Regenerate stamina if (lastStamina use)
+        else if (Time.time - lastStaminaUse >= regenerationDelay)
+        {
+            if (currentStamina < maxStamina)
+                currentStamina += staminaRegeneration * Time.deltaTime;
+        }
+            
     }
-
-
-    // Stamina Methods
-    public void _AutoRecoverStamina(float amount)
+    public void EnemyAttackPlayer(int damage)
     {
-        timer.StartTimer(3f);
-        timer.OnTimerComplete += () => _AddStamina(amount);
-    }
-
-    public void _FatigueStamina(float amount)
-    {
-        timer.StartTimer(0.3f);
-        timer.OnTimerComplete += () => _RemoveStamina(amount);
-    }
-
-    public void _AddStamina(float amount)
-    {
-        currentStamina += amount;
-        if (currentStamina < 0) currentStamina = 0;
-    }
-
-    public void _RemoveStamina(float amount)
-    {
-        currentStamina -= amount;
-        if (currentStamina < 0) currentStamina = 0;
+        currentHealth -= damage;
     }
 }

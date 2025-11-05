@@ -1,9 +1,0 @@
-{
-  "nombre": "Dragon",
-  "nivel": "100",
-  "vida": "35000",
-  "fuerza": "500",
-  "defensa": "320",
-  "velocidad": "70",
-  "loot": "[nada]"
-}

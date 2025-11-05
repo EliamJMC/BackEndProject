@@ -1,40 +1,46 @@
 using System;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.Rendering;
 
 public class Timer
 {
-    private float timer;
+    public float time;
     private float waitingTime;
-    private bool isCounting;
+    public bool isCounting = false;
 
+   
+    public bool timerStarted;
     public event Action OnTimerComplete;
 
     public void StartTimer(float time)
     {
+        timerStarted = true;
+
         isCounting = true;
         waitingTime = time;
-        timer = 0f;
+        this.time = 0f;
     }
 
     //El metodo puede ser llamado desde otro script
     public void Update(float deltaTime)
     {
         if (isCounting) 
-        {
-            timer += deltaTime;
-        }
+            time += deltaTime;
         else
-        { 
-            timer = 0f;
-        }
+            time = 0f;
 
-        if (timer >= waitingTime)
+        if (time >= waitingTime)
         {
-            timer = 0f;
+            time = 0f;
             OnTimerComplete?.Invoke();
             isCounting = false;
         }
     }
-
+    
+    public void StopTimer()
+    {
+        isCounting = false;
+        time = 0f;
+    }
 }
