@@ -1,6 +1,4 @@
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 public class CharacterStats : MonoBehaviour
 {
@@ -24,7 +22,6 @@ public class CharacterStats : MonoBehaviour
     public float currentStamina;
 
     private bool canRegenerate = false;
-
 
     public void Start()
     {

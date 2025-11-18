@@ -10,9 +10,9 @@ public class EnemySpawner : MonoBehaviour
     public int maxEnemies = 10;
 
     [Header("Area Settings")]
-    public bool useRadius = true;           // si false => usa rectángulo (bounds)
-    public float radius = 15f;              // para area circular
-    public Vector3 boxSize = new Vector3(30f, 2f, 30f); // para area rectangular (local space)
+    public bool useRadius = true;                           // si false => usa rectángulo (bounds)
+    public float radius = 15f;                              // para area circular
+    public Vector3 boxSize = new Vector3(30f, 2f, 30f);     // para area rectangular (local space)
 
     [Header("Placement")]
     public float minDistanceBetweenEnemies = 1.5f; // evita spawn muy cerca

@@ -146,14 +146,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Enemies
   player: {fileID: 0}
   MCC: {fileID: 0}
+  characterStats: {fileID: 0}
   agent: {fileID: 0}
   animator: {fileID: 0}
+  enemiesComsSystem: {fileID: 0}
   visionRange: 12
   visionAngle: 120
-  detectionRadius: 0
+  proximityRadius: 5
+  visionMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
   attackRange: 1.2
   attackCooldown: 1.5
-  direction: {x: 0, y: 0, z: 0}
-  distance: 0
-  dot: 0
-  angle: 0
+  attackDamage: 5
+  attackWindup: 0.1
+  comRadius: 50
+  detectorIsClose: 0
