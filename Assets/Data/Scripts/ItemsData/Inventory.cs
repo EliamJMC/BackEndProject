@@ -9,6 +9,7 @@ public class Inventory : MonoBehaviour
     public List<Item> inventory = new List<Item>();
     private void Start()
     {
+        Load_Inv_From_JSON();
         Add_ItemToInv(new Item(Type.RawResource)
         {
             name = "Wood",
@@ -22,9 +23,12 @@ public class Inventory : MonoBehaviour
                 source = "Oak Forest",
                 extracMethod = "Cutted with axe"
             }
-
         });
+    }
 
+    void EndGame()
+    {
+        Save_Inv_In_JSON(inventory);
     }
 
     void Add_ItemToInv(Item itemToAdd)
@@ -63,18 +67,32 @@ public class Inventory : MonoBehaviour
         inventory.Clear();
     }
 
-    void Save_Inv_JSON(List<Item> inv)
+    void Save_Inv_In_JSON(List<Item> inv)
     {
-        string basePath = Path.Combine(Application.dataPath, "InfoDataSaves" );
-        string jsonFilePath = "inventory.json";
-        string jsonToAdd = "";
-        JArray jInventory = JArray.FromObject(inventory);
+        string path = Path.Combine(Application.dataPath, "InfoDataSaves", "inventory.json");
 
-        var placeBy = jInventory.OrderBy(i => (string)i["type"]).ThenBy(i => (string)i["name"]).ToList();
-        jInventory = new JArray(placeBy);
+        if (!File.Exists(fullPath))
+        {
+            Debug.LogWarning("No existe archivo de inventario en: " + fullPath);
+            return;
+        }
 
-        File.WriteAllText(basePath + jsonFilePath, jInventory.ToString);
+        JArray jInventory = JArray.FromObject(inv);
+        var orederedInv = jInventory.OrderBy(i => (string)i["type"]).ThenBy(i => (string)i["name"]).ToList();
+        jInventory = new JArray(orederedInv);
 
+        File.WriteAllText(path, jInventory.ToString());
+    }
+
+    void Load_Inv_From_JSON() 
+    {
+        string path = Path.Combine(Application.dataPath, "InfoDataSaves", "inventory.json");
+        string jsonText = File.ReadAllText(path);
+
+        JArray jInventory = JArray.Parse(jsonText);
+        List<Item> loadedInventory = jInventory.ToObject<List<Item>>();
+
+        inventory = loadedInventory;
     }
 }
 
