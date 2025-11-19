@@ -1,6 +1,4 @@
-using System;
 using UnityEngine;
-
 public enum Type 
 { 
     RawResource, 
@@ -34,32 +32,39 @@ public enum ConsomableType
     Spoiled
 }
 
+public class ItemSpecifications {}
+
 // Item type
 [System.Serializable]
-public struct RawResource {
+public class RawResource : ItemSpecifications
+{
     public string R_ID;
     public string source;
     public string extracMethod;
 }
 [System.Serializable]
-public struct Material {
+public class Material : ItemSpecifications
+{
     public string M_ID;
     public string transformMethod;
 }
 [System.Serializable]
-public struct Part {
+public class Part : ItemSpecifications
+{
     public string P_ID;
     public string basePiece;
     public string extracMethod;
 }
 [System.Serializable]
-public struct Drop {
+public class Drop : ItemSpecifications
+{
     public string D_ID;
     public string baseEntitie;
     public string colectionMethod;
 }
 [System.Serializable]
-public struct Weapon {
+public class Weapon : ItemSpecifications
+{
     public string W_ID;
     public string[] materials;
     public int weaponDamage;
@@ -67,7 +72,8 @@ public struct Weapon {
     public WeaponType weaponType;
 }
 [System.Serializable]
-public struct Armor {
+public class Armor : ItemSpecifications
+{
     public string A_ID;
     public string[] materials;
     public int protection;
@@ -75,7 +81,8 @@ public struct Armor {
     public ArmorType armorType;
 }
 [System.Serializable]
-public struct Consumable {
+public class Consumable : ItemSpecifications
+{
     public string C_ID;
     public int calories;
     public int protein;
@@ -87,7 +94,7 @@ public struct Consumable {
 }
 
 [System.Serializable]
-public class Item
+public class Item 
 {
     public string name;
     public string description;
@@ -99,47 +106,41 @@ public class Item
     public int maxStack;
     public float weight;
 
-    public RawResource? rawResource;
-    public Material? material;
-    public Part? part;
-    public Drop? drop;
-    public Weapon? weapon;
-    public Armor? armor;
-    public Consumable? consumable;
-
-    public Item(Type type) {
-        this.type = type;
+    [SerializeReference] public ItemSpecifications itemSpecifications;
+    public Item(Type _type, WeaponType _weaponType = WeaponType.Improvised, ArmorType _armorType = ArmorType.Cloths, ConsomableType _consomableType = ConsomableType.Raw)
+    {
+        this.type = _type;
         
         switch (type) {
             // Items by 1 Type
             case Type.RawResource:
                 weight = 0.2f;
-                maxStack = 10 / weight;
-                rawResource = new RawResource();
+                maxStack = Mathf.RoundToInt(10 / weight);
+                itemSpecifications = new RawResource();
                 break;
                 
             case Type.Material:
                 weight = 0.1f;
-                maxStack = 10 / weight;
-                material = new Material();
+                maxStack = Mathf.RoundToInt(10 / weight);
+                itemSpecifications = new Material();
                 break;
 
             case Type.Part:
                 weight = 0.1f;
-                maxStack = 10 / weight;
-                part = new Part();
+                maxStack = Mathf.RoundToInt(10 / weight);
+                itemSpecifications = new Part();
                 break;
 
             case Type.Drops: 
                 weight = 0.2f;
-                maxStack = 10 / weight;
-                drop = new Drop();
+                maxStack = Mathf.RoundToInt(10 / weight);
+                itemSpecifications = new Drop();
                 break;
 
             // Items by 2 Types
             case Type.Weapon:
-                weapon = new Weapon();
-                switch (weapon.weaponType)
+                itemSpecifications = new Weapon() { weaponType = _weaponType };
+                switch (_weaponType)
                 {
                     case WeaponType.Improvised: weight = 0.5f; maxStack = 4; break;
                     case WeaponType.Crafted:    weight = 0.8f; maxStack = 2; break;
@@ -148,8 +149,8 @@ public class Item
                 break;
 
             case Type.Armor:
-                armor = new Armor();
-                switch (armor.armorType)
+                itemSpecifications = new Armor() { armorType = _armorType };
+                switch (_armorType)
                 {
                     case ArmorType.Cloths:      weight = 0.3f; break;
                     case ArmorType.Crafted:     weight = 0.5f; break;
@@ -159,8 +160,8 @@ public class Item
                 break;
 
             case Type.Consumable:
-                consumable = new Consumable();
-                switch (consumable.consomableType) 
+                itemSpecifications = new Consumable() { consomableType = _consomableType };
+                switch (_consomableType) 
                 {
                     case ConsomableType.Raw:     weight = 0.1f; break;
                     case ConsomableType.Cooked:  weight = 0.2f; break;
