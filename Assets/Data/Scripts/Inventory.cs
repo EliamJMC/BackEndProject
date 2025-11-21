@@ -7,6 +7,9 @@ using UnityEngine;
 public class Inventory : MonoBehaviour
 {
     public List<Item> inventory = new List<Item>();
+
+    string path = Path.Combine(Application.dataPath, "Data", "InfoDataSaves", "inventory.json");
+
     private void Start()
     {
         Load_Inv_From_JSON();
@@ -14,7 +17,7 @@ public class Inventory : MonoBehaviour
         {
             name = "Wood",
             description = "RawWood",
-            properties = new string[] { "inflamable", "hard", "flexible" },
+            properties = new Properties[] {} ,
             quality = 3,
             quantity = 5,
             itemSpecifications = new RawResource
@@ -24,9 +27,23 @@ public class Inventory : MonoBehaviour
                 extracMethod = "Cutted with axe"
             }
         });
+
+        Add_ItemToInv(new Item(Type.Material)
+        {
+            name = "Iron Lingot",
+            description = "Iron Lingot",
+            properties = new Properties[] { Properties.harness, Properties.harness, Properties.ductility },
+            quality = 5,
+            quantity = 2,
+            itemSpecifications = new Material
+            {
+                M_ID = "Iron_01",
+                transformMethod = "Fution"
+            }
+        });
     }
 
-    void EndGame()
+    private void OnApplicationQuit()
     {
         Save_Inv_In_JSON(inventory);
     }
@@ -65,18 +82,11 @@ public class Inventory : MonoBehaviour
             Debug.Log(inventory[1].quantity + " " + inventory[i].name + "has been deleted");
         }
         inventory.Clear();
+
     }
 
     void Save_Inv_In_JSON(List<Item> inv)
     {
-        string path = Path.Combine(Application.dataPath, "InfoDataSaves", "inventory.json");
-
-        if (!File.Exists(fullPath))
-        {
-            Debug.LogWarning("No existe archivo de inventario en: " + fullPath);
-            return;
-        }
-
         JArray jInventory = JArray.FromObject(inv);
         var orederedInv = jInventory.OrderBy(i => (string)i["type"]).ThenBy(i => (string)i["name"]).ToList();
         jInventory = new JArray(orederedInv);
@@ -86,7 +96,13 @@ public class Inventory : MonoBehaviour
 
     void Load_Inv_From_JSON() 
     {
-        string path = Path.Combine(Application.dataPath, "InfoDataSaves", "inventory.json");
+        if (!File.Exists(path))
+        {
+            Debug.LogWarning("No existe archivo de inventario en: " + path);
+            File.Create(path);
+            return;
+        }
+
         string jsonText = File.ReadAllText(path);
 
         JArray jInventory = JArray.Parse(jsonText);

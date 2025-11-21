@@ -1,15 +1,87 @@
 using UnityEngine;
-public enum Type 
-{ 
-    RawResource, 
-    Material, 
-    Part, 
+
+public enum Properties
+{
+    strength,
+    harness,
+    toughness,
+    elasticity,
+    plasticity,
+    ductility,
+    maleaility,
+    Brittleness,
+    stiffness,
+    fatigu_strenght
+}
+public enum Type
+{
+
+    /// <summary>
+    /// RawResource Specifications.
+    /// Contains 
+    /// string [R_ID], 
+    /// string [source], 
+    /// string [extracMethod].
+    /// </summary>
+    RawResource,
+    /// <summary>
+    /// Material Specifications.
+    /// Contains 
+    /// string [M_ID], 
+    /// string [transformMethod].
+    /// </summary>
+    Material,
+    /// <summary>
+    /// Part Specifications.
+    /// Contains 
+    /// string [P_ID], 
+    /// string [basePiece], 
+    /// string [extracMethod].
+    /// </summary>
+    Part,
+    /// <summary>
+    /// Drop Specifications.
+    /// Contains 
+    /// string [D_ID], 
+    /// string [baseEntitie], 
+    /// string [colectionMethod].
+    /// </summary>
     Drops,
-    Weapon, 
-    Armor, 
+    /// <summary>
+    /// Weapon Specifications.
+    /// Contains 
+    /// string [W_ID], 
+    /// string[] [materials], 
+    /// int [weaponDamage], 
+    /// int [durability], 
+    /// WeaponType [weaponType].
+    /// </summary>
+    Weapon,
+    /// <summary>
+    /// Armor Specifications.
+    /// Contains 
+    /// string [A_ID], 
+    /// string[] [materials], 
+    /// int [protection], 
+    /// int [durability], 
+    /// ArmorType [armorType].
+    /// </summary>
+    Armor,
+    /// <summary>
+    /// Consumable Specifications.
+    /// Contains 
+    /// string [C_ID], 
+    /// int [calories], 
+    /// int [protein], 
+    /// int [carbs],
+    /// int [fat],
+    /// int [hydratation],
+    /// float [expirationTime],
+    /// ConsomableType [consomableType].
+    /// </summary>
     Consumable
 }
-public enum WeaponType 
+public enum WeaponType
 {
     Improvised,
     Crafted,
@@ -33,8 +105,13 @@ public enum ConsomableType
 }
 
 public class ItemSpecifications {}
-
-// Item type
+/// <summary>
+/// RawResource Specifications.
+/// Contains 
+/// string [R_ID], 
+/// string [source], 
+/// string [extracMethod].
+/// </summary>
 [System.Serializable]
 public class RawResource : ItemSpecifications
 {
@@ -42,12 +119,25 @@ public class RawResource : ItemSpecifications
     public string source;
     public string extracMethod;
 }
+/// <summary>
+/// Material Specifications.
+/// Contains 
+/// string [M_ID], 
+/// string [transformMethod].
+/// </summary>
 [System.Serializable]
 public class Material : ItemSpecifications
 {
     public string M_ID;
     public string transformMethod;
 }
+/// <summary>
+/// Part Specifications.
+/// Contains 
+/// string [P_ID], 
+/// string [basePiece], 
+/// string [extracMethod].
+/// </summary>
 [System.Serializable]
 public class Part : ItemSpecifications
 {
@@ -55,6 +145,13 @@ public class Part : ItemSpecifications
     public string basePiece;
     public string extracMethod;
 }
+/// <summary>
+/// Drop Specifications.
+/// Contains 
+/// string [D_ID], 
+/// string [baseEntitie], 
+/// string [colectionMethod].
+/// </summary>
 [System.Serializable]
 public class Drop : ItemSpecifications
 {
@@ -62,6 +159,15 @@ public class Drop : ItemSpecifications
     public string baseEntitie;
     public string colectionMethod;
 }
+/// <summary>
+/// Weapon Specifications.
+/// Contains 
+/// string [W_ID], 
+/// string[] [materials], 
+/// int [weaponDamage], 
+/// int [durability], 
+/// WeaponType [weaponType].
+/// </summary>
 [System.Serializable]
 public class Weapon : ItemSpecifications
 {
@@ -71,6 +177,15 @@ public class Weapon : ItemSpecifications
     public int durability;
     public WeaponType weaponType;
 }
+/// <summary>
+/// Armor Specifications.
+/// Contains 
+/// string [A_ID], 
+/// string[] [materials], 
+/// int [protection], 
+/// int [durability], 
+/// ArmorType [armorType].
+/// </summary>
 [System.Serializable]
 public class Armor : ItemSpecifications
 {
@@ -80,6 +195,18 @@ public class Armor : ItemSpecifications
     public int durability;
     public ArmorType armorType;
 }
+/// <summary>
+/// Consumable Specifications.
+/// Contains 
+/// string [C_ID], 
+/// int [calories], 
+/// int [protein], 
+/// int [carbs],
+/// int [fat],
+/// int [hydratation],
+/// float [expirationTime],
+/// ConsomableType [consomableType].
+/// </summary>
 [System.Serializable]
 public class Consumable : ItemSpecifications
 {
@@ -93,20 +220,46 @@ public class Consumable : ItemSpecifications
     public ConsomableType consomableType;
 }
 
+/// <summary>
+/// Item Specifications.
+/// Contains 
+/// string [name],
+/// string [description],
+/// string[] [properties],
+/// int [quality],
+/// int [quantity],
+/// Type [type],
+/// int [maxStack],
+/// float [weight],
+/// ItemSpecifications [itemSpecifications].
+/// </summary>
 [System.Serializable]
 public class Item 
 {
     public string name;
     public string description;
-    public string[] properties;
+    public Properties[] properties;
     public int quality;
     public int quantity;
     public Type type;
 
     public int maxStack;
     public float weight;
+    [SerializeReference] public ItemSpecifications itemSpecifications = new Material();
 
-    [SerializeReference] public ItemSpecifications itemSpecifications;
+    /// <summary>
+    /// Item Specifications.
+    /// Contains 
+    /// string [name],
+    /// string [description],
+    /// string[] [properties],
+    /// int [quality],
+    /// int [quantity],
+    /// Type [type],
+    /// int [maxStack],
+    /// float [weight],
+    /// ItemSpecifications [itemSpecifications].
+    /// </summary>
     public Item(Type _type, WeaponType _weaponType = WeaponType.Improvised, ArmorType _armorType = ArmorType.Cloths, ConsomableType _consomableType = ConsomableType.Raw)
     {
         this.type = _type;

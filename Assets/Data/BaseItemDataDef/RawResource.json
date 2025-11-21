@@ -1,0 +1,187 @@
+[
+  {
+    "name": "Bone",
+    "description": "Animal or human remains, used for primitive tools and crafting.",
+    "properties": [
+      0,
+      7,
+      8
+    ],
+    "quality": 0,
+    "quantity": 0,
+    "type": 0,
+    "maxStack": 50,
+    "weight": 0.2,
+    "itemSpecifications": {
+      "R_ID": null,
+      "source": null,
+      "extracMethod": null
+    }
+  },
+  {
+    "name": "Branches",
+    "description": "Small tree parts, useful for traps, firewood, or light weapons.",
+    "properties": [
+      4,
+      0
+    ],
+    "quality": 0,
+    "quantity": 0,
+    "type": 0,
+    "maxStack": 50,
+    "weight": 0.2,
+    "itemSpecifications": {
+      "R_ID": null,
+      "source": null,
+      "extracMethod": null
+    }
+  },
+  {
+    "name": "Cloth",
+    "description": "Recovered fabric from clothes or furniture, useful for bandages, bags, or traps.",
+    "properties": [
+      4,
+      6
+    ],
+    "quality": 0,
+    "quantity": 0,
+    "type": 0,
+    "maxStack": 50,
+    "weight": 0.2,
+    "itemSpecifications": {
+      "R_ID": null,
+      "source": null,
+      "extracMethod": null
+    }
+  },
+  {
+    "name": "Glass Shards",
+    "description": "Broken glass pieces, dangerous but useful as cutting or stabbing weapons.",
+    "properties": [
+      3,
+      7
+    ],
+    "quality": 0,
+    "quantity": 0,
+    "type": 0,
+    "maxStack": 50,
+    "weight": 0.2,
+    "itemSpecifications": {
+      "R_ID": null,
+      "source": null,
+      "extracMethod": null
+    }
+  },
+  {
+    "name": "Leather",
+    "description": "Tanned animal hide, durable and flexible, ideal for clothing and protection.",
+    "properties": [
+      2,
+      4
+    ],
+    "quality": 0,
+    "quantity": 0,
+    "type": 0,
+    "maxStack": 50,
+    "weight": 0.2,
+    "itemSpecifications": {
+      "R_ID": null,
+      "source": null,
+      "extracMethod": null
+    }
+  },
+  {
+    "name": "Metal Scrap",
+    "description": "Metal fragments found in ruins, used for weapons and reinforcing structures.",
+    "properties": [
+      0,
+      3,
+      5,
+      9
+    ],
+    "quality": 0,
+    "quantity": 0,
+    "type": 0,
+    "maxStack": 50,
+    "weight": 0.2,
+    "itemSpecifications": {
+      "R_ID": null,
+      "source": null,
+      "extracMethod": null
+    }
+  },
+  {
+    "name": "Plastic",
+    "description": "Plastic fragments found in debris, useful for containers and lightweight parts.",
+    "properties": [
+      6,
+      4
+    ],
+    "quality": 0,
+    "quantity": 0,
+    "type": 0,
+    "maxStack": 50,
+    "weight": 0.2,
+    "itemSpecifications": {
+      "R_ID": null,
+      "source": null,
+      "extracMethod": null
+    }
+  },
+  {
+    "name": "Rocks",
+    "description": "Small mineral fragments, useful as projectiles or rudimentary tools.",
+    "properties": [
+      3,
+      7
+    ],
+    "quality": 0,
+    "quantity": 0,
+    "type": 0,
+    "maxStack": 50,
+    "weight": 0.2,
+    "itemSpecifications": {
+      "R_ID": null,
+      "source": null,
+      "extracMethod": null
+    }
+  },
+  {
+    "name": "Stone",
+    "description": "Solid mineral resource, useful for primitive tools and construction.",
+    "properties": [
+      0,
+      3,
+      7
+    ],
+    "quality": 0,
+    "quantity": 0,
+    "type": 0,
+    "maxStack": 50,
+    "weight": 0.2,
+    "itemSpecifications": {
+      "R_ID": null,
+      "source": null,
+      "extracMethod": null
+    }
+  },
+  {
+    "name": "Wood",
+    "description": "Basic material from trees, used for barricades and improvised weapons.",
+    "properties": [
+      0,
+      1,
+      2
+    ],
+    "quality": 0,
+    "quantity": 0,
+    "type": 0,
+    "maxStack": 50,
+    "weight": 0.2,
+    "itemSpecifications": {
+      "R_ID": null,
+      "source": null,
+      "extracMethod": null
+    }
+  }
+]

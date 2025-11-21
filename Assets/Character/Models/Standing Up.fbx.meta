@@ -1,7 +1,7 @@
 fileFormatVersion: 2
-guid: 0b39febae73586447ab2cf38a9a99c2a
+guid: 750be75d54ff45a499365ddfbd88e5ad
 ModelImporter:
-  serializedVersion: 22200
+  serializedVersion: 24200
   internalIDToNameTable: []
   externalObjects: {}
   materials:
@@ -31,11 +31,11 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: Idle
+      name: Standing Up
       takeName: mixamo.com
       internalID: -203655887218126122
       firstFrame: 0
-      lastFrame: 59
+      lastFrame: 188
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -85,6 +85,9 @@ ModelImporter:
     maxBonesPerVertex: 4
     minBoneWeight: 0.001
     optimizeBones: 1
+    generateMeshLods: 0
+    meshLodGenerationFlags: 0
+    maximumMeshLod: -1
     meshOptimizationFlags: -1
     indexFormat: 0
     secondaryUVAngleDistortion: 8
