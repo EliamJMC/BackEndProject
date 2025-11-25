@@ -1,0 +1,37 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/Data/ProvInv.uss?fileID=7433441132597879392&amp;guid=eac56603969a89e4db8c1bf2343b5626&amp;type=3#ProvInv" />
+    <ui:VisualElement name="BackGround" style="flex-grow: 1;">
+        <ui:VisualElement name="Inv_Bar_Cont" class="Inv_Bar_Cont" style="flex-grow: 1;">
+            <ui:VisualElement name="Slot" class="Slot" style="flex-grow: 1;">
+                <ui:VisualElement name="Img_Cont" style="flex-grow: 1;" />
+            </ui:VisualElement>
+            <ui:VisualElement name="Slot" class="Slot" style="flex-grow: 1;">
+                <ui:VisualElement name="Img_Cont" style="flex-grow: 1;" />
+            </ui:VisualElement>
+            <ui:VisualElement name="Slot" class="Slot" style="flex-grow: 1;">
+                <ui:VisualElement name="Img_Cont" style="flex-grow: 1;" />
+            </ui:VisualElement>
+            <ui:VisualElement name="Slot" class="Slot" style="flex-grow: 1;">
+                <ui:VisualElement name="Img_Cont" style="flex-grow: 1;" />
+            </ui:VisualElement>
+            <ui:VisualElement name="Slot" class="Slot" style="flex-grow: 1;">
+                <ui:VisualElement name="Img_Cont" style="flex-grow: 1;" />
+            </ui:VisualElement>
+            <ui:VisualElement name="Slot" class="Slot" style="flex-grow: 1;">
+                <ui:VisualElement name="Img_Cont" style="flex-grow: 1;" />
+            </ui:VisualElement>
+            <ui:VisualElement name="Slot" class="Slot" style="flex-grow: 1;">
+                <ui:VisualElement name="Img_Cont" style="flex-grow: 1;" />
+            </ui:VisualElement>
+            <ui:VisualElement name="Slot" class="Slot" style="flex-grow: 1;">
+                <ui:VisualElement name="Img_Cont" style="flex-grow: 1;" />
+            </ui:VisualElement>
+            <ui:VisualElement name="Slot" class="Slot" style="flex-grow: 1;">
+                <ui:VisualElement name="Img_Cont" style="flex-grow: 1;" />
+            </ui:VisualElement>
+            <ui:VisualElement name="Slot" class="Slot" style="flex-grow: 1;">
+                <ui:VisualElement name="Img_Cont" style="flex-grow: 1;" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

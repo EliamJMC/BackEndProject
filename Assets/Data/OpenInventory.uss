@@ -1,0 +1,64 @@
+:root {
+}
+
+.BackGround {
+    flex-direction: row;
+}
+
+.LeftCont {
+    flex-grow: 1;
+    flex-direction: row;
+    align-content: flex-start;
+    width: 40%;
+}
+
+.CenterCont {
+    flex-grow: 1;
+    width: 40%;
+}
+
+.RightCont {
+    flex-grow: 1;
+    width: 20%;
+}
+
+.Inv_Slides {
+    height: auto;
+    width: 5%;
+    background-color: rgb(39, 0, 255);
+}
+
+.InvCont {
+    background-color: rgba(0, 0, 0, 0);
+    height: auto;
+    width: 95%;
+    position: relative;
+    translate: 0 0;
+}
+
+.R_Inv_BackGround {
+    background-color: rgba(0, 0, 0, 0);
+    height: auto;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+.M_Inv_BackGround {
+    display: none;
+    background-color: rgb(24, 0, 255);
+}
+
+.Content {
+    flex-grow: 0;
+    flex-direction: column;
+}
+
+.ItemSlot {
+    background-color: rgb(255, 172, 245);
+    height: 60px;
+    min-height: 60px;
+    max-height: 60px;
+    width: 100%;
+    margin-bottom: 2px;
+}

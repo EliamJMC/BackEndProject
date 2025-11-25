@@ -6,6 +6,7 @@
     public es para declarar una variable que puede ser accedida desde cualquier otra clase.
 */
 using UnityEngine;
+using System;
 
 public enum PlayerState
 {
@@ -18,10 +19,14 @@ public class MainCharacterController : MonoBehaviour
 {
     // Gravity con
     public const float Gravity = -9.81f;
-    
-    [Header("Variables")]
+
+    [Header("Speed Variables")]
     // Speed vars
-    public float courrentSpeed, walkingSpeed = 5.0f, runningSpeed;
+    public float courrentSpeed;
+    public float walkingSpeed = 5.0f;
+    public float runningSpeed;
+
+    [Header("Other Variables")]
     public float jumpForce = 0.5f;
     public float rotation = 10f;
 
@@ -32,18 +37,20 @@ public class MainCharacterController : MonoBehaviour
 
     // States
     [Header("States")]
-    public bool isGrounded;
-    public bool isMoving;
-    public bool isRunning;
-    public bool isJumping;
+    [NonSerialized] public bool iniciated;
+
+    [NonSerialized] public bool isGrounded;
+    [NonSerialized] public bool isMoving;
+    [NonSerialized] public bool isRunning;
+    [NonSerialized] public bool isJumping;
 
     // Components
     [Header("Componentes")]
-    [SerializeField]    private CharacterController controller;
-    [SerializeField]    private Animator animator;
-    [SerializeField]    private Transform camTransform;
-    [SerializeField]    private CharacterStats characterStats;
-    [SerializeField]    private Timer timer = new Timer(); // Create a new "Timer" script
+    [NonSerialized] public CharacterController controller;
+    [NonSerialized] public Animator animator;
+    [NonSerialized] public Transform camTransform;
+    [NonSerialized] public CharacterStats characterStats;
+    private Timer timer = new Timer(); // Create a new "Timer" script
 
     public PlayerState playerState()
     {
@@ -72,6 +79,7 @@ public class MainCharacterController : MonoBehaviour
         Mouvement(move);
 
     }
+    
     void UpdatingMethods(Vector3 move)
     {
         timer.Update(Time.deltaTime);
@@ -80,9 +88,11 @@ public class MainCharacterController : MonoBehaviour
         isMoving = move.magnitude >= 0.1f;
         isRunning = Input.GetKey(KeyCode.LeftShift) && isGrounded && characterStats.currentStamina > 0;
         isJumping = Input.GetButtonDown("Jump") && isGrounded;
+
     }
     void Def_BaseSets()
     {
+        iniciated = false;
         courrentSpeed = walkingSpeed;
         runningSpeed = walkingSpeed * 1.5f;
     }
@@ -93,31 +103,26 @@ public class MainCharacterController : MonoBehaviour
         animator = GetComponentInChildren<Animator>();
         camTransform = GetComponentInChildren<Camera>().transform;
     }
+
     void Mouvement(Vector3 move)
     {
+        if (!iniciated) 
+            return;
         switch (playerState())
         {
             case PlayerState.RUNNING:
-                Run();
-                break; 
+                Run(move);
+                break;
             case PlayerState.WALKING:
                 Walk(move);
-                break; 
+                break;
             case PlayerState.IDLE:
                 Jump();
                 break;
         }
-
+        
     }
-    void Run()
-    {
-        courrentSpeed = runningSpeed;
-        animator.SetBool("isRunning", true);
-
-        // Jumping while running
-        Jump();
-    }
-    void Walk(Vector3 move)
+    void Move(Vector3 move)
     {
         float targetAngle = Mathf.Atan2(move.normalized.x, move.normalized.z) * Mathf.Rad2Deg + camTransform.eulerAngles.y;
         float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref rotation, 0.1f);
@@ -127,6 +132,19 @@ public class MainCharacterController : MonoBehaviour
         controller.Move(moveDir.normalized * courrentSpeed * Time.deltaTime);
 
         animator.SetFloat("Speed", move.magnitude);
+    }
+    void Run(Vector3 move)
+    {
+        Move(move);
+        courrentSpeed = runningSpeed;
+        animator.SetBool("isRunning", true);
+
+        // Jumping while running
+        Jump();
+    }
+    void Walk(Vector3 move)
+    {
+        Move(move);
         courrentSpeed = walkingSpeed;
         animator.SetBool("isRunning", false);
     }
@@ -142,6 +160,7 @@ public class MainCharacterController : MonoBehaviour
             animator.SetTrigger("Jump");
         }
     }
+    
     void GravityManagemnt() 
     {
         //Dont touch I dont know how it works

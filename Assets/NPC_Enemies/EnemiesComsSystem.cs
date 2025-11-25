@@ -47,6 +47,7 @@ public class EnemiesComsSystem : MonoBehaviour
         Enemies script = leaded.GetComponent<Enemies>();
         foreach (var possibleLeader in enemiesDetectedPlayer)
         {
+            if (possibleLeader == null) continue;
             dist = Vector3.Distance(leaded.transform.position, possibleLeader.transform.position);
             if (dist < nearestDist && dist <= script.comRadius)
             {

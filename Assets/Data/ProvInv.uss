@@ -1,0 +1,62 @@
+:root {
+}
+
+.Inv_Bar_Cont {
+    background-color: rgba(0, 0, 0, 0.2);
+    align-self: center;
+    width: 60%;
+    height: 10%;
+    justify-content: space-evenly;
+    align-items: center;
+    align-content: center;
+    flex-shrink: 0;
+    flex-basis: auto;
+    bottom: 5%;
+    min-width: 0;
+    min-height: 0;
+    margin-top: 0;
+    margin-right: 0;
+    margin-bottom: 0;
+    margin-left: 0;
+    position: absolute;
+    top: auto;
+    flex-direction: row;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    border-bottom-left-radius: 5px;
+}
+
+.Slot {
+    width: 10%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.2);
+    margin-top: 1px;
+    margin-right: 1px;
+    margin-bottom: 1px;
+    margin-left: 1px;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    border-bottom-left-radius: 5px;
+    align-content: auto;
+    align-self: auto;
+    align-items: flex-start;
+}
+
+.Slot.selected{
+    width: 10%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+    margin-top: 1px;
+    margin-right: 1px;
+    margin-bottom: 1px;
+    margin-left: 1px;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    border-bottom-left-radius: 5px;
+    align-content: auto;
+    align-self: auto;
+    align-items: flex-start;
+}

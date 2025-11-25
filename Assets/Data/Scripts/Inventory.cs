@@ -7,17 +7,23 @@ using UnityEngine;
 public class Inventory : MonoBehaviour
 {
     public List<Item> inventory = new List<Item>();
+    public Item[] barItems;
+    public Sprite i_con;
+    public Sprite i_con2;
 
     string path = Path.Combine(Application.dataPath, "Data", "InfoDataSaves", "inventory.json");
 
     private void Start()
     {
+        barItems = new Item[10];
+
         Load_Inv_From_JSON();
-        Add_ItemToInv(new Item(Type.RawResource)
+
+        Add_ItemToItemsBar(3, new Item(Type.RawResource)
         {
+            icon = i_con,
             name = "Wood",
             description = "RawWood",
-            properties = new Properties[] {} ,
             quality = 3,
             quantity = 5,
             itemSpecifications = new RawResource
@@ -28,19 +34,25 @@ public class Inventory : MonoBehaviour
             }
         });
 
-        Add_ItemToInv(new Item(Type.Material)
+        Add_ItemToItemsBar(5, new Item(Type.RawResource)
         {
-            name = "Iron Lingot",
-            description = "Iron Lingot",
-            properties = new Properties[] { Properties.harness, Properties.harness, Properties.ductility },
-            quality = 5,
-            quantity = 2,
-            itemSpecifications = new Material
+            icon = i_con2,
+            name = "Rock",
+            description = "RawRock",
+            quality = 3,
+            quantity = 5,
+            itemSpecifications = new RawResource
             {
-                M_ID = "Iron_01",
-                transformMethod = "Fution"
+                R_ID = "Rock_01",
+                source = "Oak Forest",
+                extracMethod = "Cutted with axe"
             }
         });
+    }
+
+    void Add_ItemToItemsBar(int index, Item item)
+    {
+        barItems[index] = item;
     }
 
     private void OnApplicationQuit()
@@ -78,13 +90,12 @@ public class Inventory : MonoBehaviour
     void Clear_Inv()
     {
         for (int i = 0; i < inventory.Count; i++)
-        {
             Debug.Log(inventory[1].quantity + " " + inventory[i].name + "has been deleted");
-        }
-        inventory.Clear();
 
+        inventory.Clear();
     }
 
+    // JSON Methods
     void Save_Inv_In_JSON(List<Item> inv)
     {
         JArray jInventory = JArray.FromObject(inv);
@@ -93,7 +104,6 @@ public class Inventory : MonoBehaviour
 
         File.WriteAllText(path, jInventory.ToString());
     }
-
     void Load_Inv_From_JSON() 
     {
         if (!File.Exists(path))

@@ -1,0 +1,41 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/Data/OpenInventory.uss?fileID=7433441132597879392&amp;guid=e11bb8ef6f2d0644ca75c752379fc1a3&amp;type=3#OpenInventory" />
+    <ui:VisualElement name="BackGround" class="BackGround" style="flex-grow: 1;">
+        <ui:VisualElement name="LeftCont" class="LeftCont" style="flex-grow: 1;">
+            <ui:VisualElement name="Inv_Slides" class="Inv_Slides" style="flex-grow: 1;" />
+            <ui:VisualElement name="InvCont" class="InvCont" style="flex-grow: 1;">
+                <ui:VisualElement name="Inv_BackGround" class="M_Inv_BackGround" style="flex-grow: 1;" />
+                <ui:ScrollView name="R_Inv_BackGround" class="R_Inv_BackGround">
+                    <ui:VisualElement name="Content" class="Content" style="flex-grow: 1;">
+                        <ui:VisualElement name="ItemSlot" class="ItemSlot" style="flex-grow: 1;" />
+                        <ui:VisualElement name="ItemSlot" class="ItemSlot" style="flex-grow: 1;" />
+                        <ui:VisualElement name="ItemSlot" class="ItemSlot" style="flex-grow: 1;" />
+                        <ui:VisualElement name="ItemSlot" class="ItemSlot" style="flex-grow: 1;" />
+                        <ui:VisualElement name="ItemSlot" class="ItemSlot" style="flex-grow: 1;" />
+                        <ui:VisualElement name="ItemSlot" class="ItemSlot" style="flex-grow: 1;" />
+                        <ui:VisualElement name="ItemSlot" class="ItemSlot" style="flex-grow: 1;" />
+                        <ui:VisualElement name="ItemSlot" class="ItemSlot" style="flex-grow: 1;" />
+                        <ui:VisualElement name="ItemSlot" class="ItemSlot" style="flex-grow: 1;" />
+                        <ui:VisualElement name="ItemSlot" class="ItemSlot" style="flex-grow: 1;" />
+                        <ui:VisualElement name="ItemSlot" class="ItemSlot" style="flex-grow: 1;" />
+                        <ui:VisualElement name="ItemSlot" class="ItemSlot" style="flex-grow: 1;" />
+                        <ui:VisualElement name="ItemSlot" class="ItemSlot" style="flex-grow: 1;" />
+                        <ui:VisualElement name="ItemSlot" class="ItemSlot" style="flex-grow: 1;" />
+                        <ui:VisualElement name="ItemSlot" class="ItemSlot" style="flex-grow: 1;" />
+                        <ui:VisualElement name="ItemSlot" class="ItemSlot" style="flex-grow: 1;" />
+                        <ui:VisualElement name="ItemSlot" class="ItemSlot" style="flex-grow: 1;" />
+                        <ui:VisualElement name="ItemSlot" class="ItemSlot" style="flex-grow: 1;" />
+                        <ui:VisualElement name="ItemSlot" class="ItemSlot" style="flex-grow: 1;" />
+                        <ui:VisualElement name="ItemSlot" class="ItemSlot" style="flex-grow: 1; background-color: rgb(255, 5, 19);" />
+                        <ui:VisualElement name="ItemSlot" class="ItemSlot" style="flex-grow: 1;" />
+                        <ui:VisualElement name="ItemSlot" class="ItemSlot" style="flex-grow: 1;" />
+                        <ui:VisualElement name="ItemSlot" class="ItemSlot" style="flex-grow: 1;" />
+                        <ui:VisualElement name="ItemSlot" class="ItemSlot" style="flex-grow: 1;" />
+                    </ui:VisualElement>
+                </ui:ScrollView>
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="CenterCont" class="CenterCont" style="flex-grow: 1;" />
+        <ui:VisualElement name="RightCont" class="RightCont" style="flex-grow: 1;" />
+    </ui:VisualElement>
+</ui:UXML>

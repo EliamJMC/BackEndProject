@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public enum Properties
 {
@@ -223,6 +224,7 @@ public class Consumable : ItemSpecifications
 /// <summary>
 /// Item Specifications.
 /// Contains 
+/// sprite [icon],
 /// string [name],
 /// string [description],
 /// string[] [properties],
@@ -236,13 +238,13 @@ public class Consumable : ItemSpecifications
 [System.Serializable]
 public class Item 
 {
+    public Sprite icon;
     public string name;
     public string description;
     public Properties[] properties;
     public int quality;
     public int quantity;
     public Type type;
-
     public int maxStack;
     public float weight;
     [SerializeReference] public ItemSpecifications itemSpecifications = new Material();
@@ -250,6 +252,7 @@ public class Item
     /// <summary>
     /// Item Specifications.
     /// Contains 
+    /// sprite [icon],
     /// string [name],
     /// string [description],
     /// string[] [properties],

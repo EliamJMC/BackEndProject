@@ -47,6 +47,14 @@ public class Enemies : MonoBehaviour
     private float distanceToPlayer;
     private float angleToPlayer;
 
+    public void OnDestroy()
+    { 
+        if (enemiesComsSystem.enemiesInScene.Contains(this))
+            enemiesComsSystem.enemiesInScene.Remove(this); 
+        if (enemiesComsSystem.enemiesDetectedPlayer.Contains(this))
+            enemiesComsSystem.enemiesDetectedPlayer.Remove(this);
+    }
+
     public void Start()
     {
         Def_Components();
@@ -87,6 +95,7 @@ public class Enemies : MonoBehaviour
         agent.speed = 2.5f / scaleValue;
         attackDamage = Mathf.RoundToInt(scaleValue * 5);
     }
+
     void Def_Agent_Sattings()
     {
         // Configurar agente para coherencia
@@ -148,7 +157,6 @@ public class Enemies : MonoBehaviour
     public bool WitnessedDetectedPlayer()
     {
         Enemies nearestDetector = enemiesComsSystem.FindNearestDetector(this);
-
         if (!DetectedPlayer() && nearestDetector != null)
         {
             float dist = Vector3.Distance(transform.position, nearestDetector.transform.position);

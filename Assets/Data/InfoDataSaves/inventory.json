@@ -1,5 +1,6 @@
 [
   {
+    "icon": null,
     "name": "Wood",
     "description": "RawWood",
     "properties": [
@@ -12,20 +13,6 @@
     "type": 0,
     "maxStack": 50,
     "weight": 0.2,
-    "itemSpecifications": {}
-  },
-  {
-    "name": "Iron Lingot",
-    "description": "Iron Lingot",
-    "properties": [
-      0,
-      0
-    ],
-    "quality": 5,
-    "quantity": 46,
-    "type": 1,
-    "maxStack": 100,
-    "weight": 0.1,
     "itemSpecifications": {}
   }
 ]
